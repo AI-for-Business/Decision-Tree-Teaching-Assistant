@@ -16,7 +16,7 @@ import graphviz
 #             Erstelle S(Wert)
 #             Berechne Entropie(Wert)
 #
-#         Berechne Gain(der gesanten Spalte)
+#         Berechne Gain(der gesamten Spalte)
 #
 #     Vergleiche Gain aller Spalten
 #     Wähle Maximum
