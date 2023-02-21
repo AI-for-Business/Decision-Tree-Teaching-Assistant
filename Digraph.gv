@@ -1,0 +1,28 @@
+digraph {
+	Outlook
+	Test [id=Outlook]
+	Test2 [id=Outlook]
+	"Outlook -> Sunny"
+	Outlook -> "Outlook -> Sunny" [label=Sunny]
+	Test [id="Outlook -> Sunny"]
+	Test2 [id="Outlook -> Sunny"]
+	"Humidity -> High"
+	"Outlook -> Sunny" -> "Humidity -> High" [label=High]
+	"Humidity -> High" [label=No]
+	"Humidity -> Normal"
+	"Outlook -> Sunny" -> "Humidity -> Normal" [label=Normal]
+	"Humidity -> Normal" [label=Yes]
+	"Outlook -> Overcast"
+	Outlook -> "Outlook -> Overcast" [label=Overcast]
+	"Outlook -> Overcast" [label=Yes]
+	"Outlook -> Rain"
+	Outlook -> "Outlook -> Rain" [label=Rain]
+	Test [id="Outlook -> Rain"]
+	Test2 [id="Outlook -> Rain"]
+	"Wind -> Weak"
+	"Outlook -> Rain" -> "Wind -> Weak" [label=Weak]
+	"Wind -> Weak" [label=Yes]
+	"Wind -> Strong"
+	"Outlook -> Rain" -> "Wind -> Strong" [label=Strong]
+	"Wind -> Strong" [label=No]
+}
