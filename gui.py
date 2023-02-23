@@ -5,7 +5,7 @@ from datetime import datetime
 from numpy import random as r
 import tkinter as tk
 import typing
-# import generator as g
+import generator as g
 # import solver as s
 
 

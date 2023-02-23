@@ -51,3 +51,57 @@ def create_tennis_data(self):
 
     self.output_file.close()
     self.set_input_file(self.output_file.name)
+
+
+def generate_random_ruleset(columns: int, rows: int, values_per_column: int):
+    # Step 1: Generate columns and value expressions
+    # Step 2: Generate decision rules from step 1
+    # Step 3: Randomize value expressions and calculate results from step 2
+
+    cols = []  # List of all column headers
+    col2val = {}  # Dictionary of column header -> list of different values in that column
+    rules = []  # [(column, value)]
+
+    for i in range(columns):
+        key = "col_" + str(i+1)
+        cols.append(key)
+        col2val.update({key: "[]"})
+    # print(cols)
+
+    for idx, c in enumerate(cols):
+        val_list = []
+        for i in range(values_per_column):
+            val_list.append(str(c) + '-' + str(i+1))
+        # print(val_list)
+        col2val.update({c: val_list})
+    # print(col2val)
+
+
+# Main Method
+if __name__ == '__main__':
+    # Todo: Delete this
+    generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
+
+    # 15:00 ABBA
+    # Zug: Auftrag von LL
+    # Zug: Detta coden
+
+    # Werte -> Regeln -> Ergebnisse -> Zeilen
+    # [cols]
+    # { col: [values] }
+
+    test_dict = {
+        "a": [1, 2, 3],
+        "b": ["Alpha", "Beta", "Gamma"],
+        "c": 0.15,
+        "d": "Mustang",
+        "e": False,
+        "f": 400
+    }
+
+    # print(test_dict)
+    # print(test_dict["f"]*5)
+    # test_dict.update({"key": "value"})
+    # test_dict["b"].append("Delta")
+    # print(r.choice(test_dict["b"]))
+    # print(test_dict)
