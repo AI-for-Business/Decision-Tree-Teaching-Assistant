@@ -60,7 +60,6 @@ def generate_random_ruleset(columns: int, rows: int, values_per_column: int):
 
     cols = []  # List of all column headers
     col2val = {}  # Dictionary of column header -> list of different values in that column
-    rules = []  # [(column, value)]
 
     for i in range(columns):
         key = "col_" + str(i+1)
@@ -80,23 +79,22 @@ def generate_random_ruleset(columns: int, rows: int, values_per_column: int):
 # Main Method
 if __name__ == '__main__':
     # Todo: Delete this
-    generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
-
-    # 15:00 ABBA
-    # Zug: Auftrag von LL
-    # Zug: Detta coden
+    # generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
 
     # Werte -> Regeln -> Ergebnisse -> Zeilen
     # [cols]
     # { col: [values] }
 
     test_dict = {
-        "a": [1, 2, 3],
-        "b": ["Alpha", "Beta", "Gamma"],
-        "c": 0.15,
-        "d": "Mustang",
-        "e": False,
-        "f": 400
+        0: "medium",
+        1: "rainy",
+        2: "test"
+        # 0: [1, 2, 3],
+        # 1: ["Alpha", "Beta", "Gamma"],
+        # 2: 0.15,
+        # 3: "Mustang",
+        # 4: False,
+        # 5: 400
     }
 
     # print(test_dict)
@@ -105,3 +103,24 @@ if __name__ == '__main__':
     # test_dict["b"].append("Delta")
     # print(r.choice(test_dict["b"]))
     # print(test_dict)
+
+    test_cols = ["humidity", "sky"]
+    # print("Column header: ", test_cols)
+    line_1 = ["medium", "sunny", "test"]
+    line_2 = ["high", "sunny"]
+    # rules = [("humidity", "high"), ("sky", "sunny")]
+    rules = [("humidity", "high")]
+    # lines = [line_1, line_2]
+    lines = [line_1]
+
+    classification = True
+    for k, v in test_dict.items():
+        # print(k, v)
+        if str(line_1[k]) == v:
+            # print("yes")
+            pass
+        else:
+            # print("no")
+            classification = False
+            break
+    # return classification

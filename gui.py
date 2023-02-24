@@ -181,7 +181,7 @@ class GUI:
         s: str = "Outlook;Temp;Humidity;Windy;Play;\n"
         self.output_file.write(s)
 
-        for i in range(30):
+        for i in range(100):
             o = outlook[r.randint(0, len(outlook))]
             t = temp[r.randint(0, len(temp))]
             h = humidity[r.randint(0, len(humidity))]
