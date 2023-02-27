@@ -288,32 +288,30 @@ def decision_tree_calculation_compact_log(subset: pd.DataFrame, root_id_suffix: 
     return split_attr_name, dot, (log + logs)  # The name of the split attribute and all dot file entries are returned.
 
 
-# Creates the dot file and shows the graph.
-def show_tree(dot: list[str]):
-    # Create the dot file.
-    f = open("tree.dot", "w")
-    f.write("digraph G {\n")
-    for line in dot:
-        f.write("\t" + line + "\n")
-    f.write("}")
-    f.close()
+# Calculates the decision tree returning the dot file and creates depending on the input argument
+# either a compact or a detailed log file.
+def decision_tree_calculation(df: pd.DataFrame, compact_log: bool):
+    # calculation
+    if compact_log:
+        output = decision_tree_calculation_compact_log(df, "")
+    else:
+        output = decision_tree_calculation_detailed_log(df, "")
 
-    # Render the graph from the dot file.
-    path = 'tree.dot'
-    s = Source.from_file(path)
-    s.view()
-
-
-# Creates the log file.
-def create_log(log: list[str]):
+    # create the log file
+    log = output[2]
     f = open("log.txt", "w")
     for line in log:
         f.write(line + "\n")
     f.close()
 
-
-def decision_tree_calculation(df: pd.DataFrame, compact_log: bool):
-
+    # create the dot file for the tree
+    dot_text = output[1]
+    f = open("tree.dot", "w")
+    f.write("digraph G {\n")
+    for line in dot_text:
+        f.write("\t" + line + "\n")
+    f.write("}")
+    f.close()
 
 
 # input for tests
@@ -345,7 +343,8 @@ data_arg2: pd.DataFrame = pd.DataFrame(data2)  # the dataframe for data2
 root_id_suffix_arg = ""  # second argument of the function
 
 
-# creates the decision tree and log file based on the data
-output = decision_tree_calculation_compact_log(data_arg, "")
-show_tree(output[1])
-create_log(output[2])
+# run the classification algorithm on the data set and get the decision tree and log file
+decision_tree_calculation(data_arg, compact_log=True)
+# Render the graph from the dot file.
+path = 'tree.dot'
+Source.from_file(path).view()
