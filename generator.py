@@ -81,46 +81,26 @@ if __name__ == '__main__':
     # Todo: Delete this
     # generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
 
-    # Werte -> Regeln -> Ergebnisse -> Zeilen
-    # [cols]
-    # { col: [values] }
-
     test_dict = {
         0: "medium",
         1: "rainy",
         2: "test"
-        # 0: [1, 2, 3],
-        # 1: ["Alpha", "Beta", "Gamma"],
-        # 2: 0.15,
-        # 3: "Mustang",
-        # 4: False,
-        # 5: 400
     }
+    dict2 = {
+        2: "sunny"
+    }
+    rules = [test_dict, dict2]
 
-    # print(test_dict)
-    # print(test_dict["f"]*5)
-    # test_dict.update({"key": "value"})
-    # test_dict["b"].append("Delta")
-    # print(r.choice(test_dict["b"]))
-    # print(test_dict)
-
-    test_cols = ["humidity", "sky"]
-    # print("Column header: ", test_cols)
     line_1 = ["medium", "sunny", "test"]
     line_2 = ["high", "sunny"]
-    # rules = [("humidity", "high"), ("sky", "sunny")]
-    rules = [("humidity", "high")]
-    # lines = [line_1, line_2]
-    lines = [line_1]
 
-    classification = True
-    for k, v in test_dict.items():
-        # print(k, v)
-        if str(line_1[k]) == v:
-            # print("yes")
-            pass
-        else:
-            # print("no")
-            classification = False
-            break
-    # return classification
+    for r in rules:
+        classification = True
+        for k, v in r.items():
+            # print(k, v)
+            if classification:
+                if str(line_1[k]) == v:
+                    pass
+                else:
+                    classification = False
+        print(classification)
