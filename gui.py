@@ -1,5 +1,5 @@
 from tkinter import filedialog as fd
-from tkinter import Button, Entry, END, ttk
+from tkinter import Button, Entry, END, ttk, Label, IntVar
 from os import path
 from datetime import datetime
 from numpy import random as r
@@ -20,6 +20,10 @@ class GUI:
         # Interactive GUI elements
         self.lbl_file_in = None
         self.lbl_path_out = None
+        self.lbl_path_data_out = None
+        self.Columns: Entry = None
+        self.Rows: Entry = None
+        self.Values: Entry = None
 
         # Create tab control element
         self.tab_control = ttk.Notebook(self.root)
@@ -36,11 +40,45 @@ class GUI:
     def create_input_tab(self, tab_control: ttk.Notebook):
         # Create the frame
         tab = ttk.Frame(tab_control)
-        btn_tennis = Button(tab, text="Create tennis data...", command=self.create_tennis_data)
-        # btn_tennis = Button(tab, text="Create tennis data...", command=g.create_tennis_data)
-        btn_tennis.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
+        tab.columnconfigure(0, weight=1)
+        tab.columnconfigure(1, weight=1)
 
-        # Todo Create content of input tab
+        lbl_cols = Label(tab, text="Amount of columns:")
+        lbl_cols.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
+        ent_cols = Entry(tab, width=50)
+        ent_cols.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+        self.Columns = ent_cols
+
+        lbl_vals = Label(tab, text="Different values per column:")
+        lbl_vals.grid(column=0, row=1, sticky=tk.W, padx=5, pady=5)
+        ent_vals = Entry(tab, width=50)
+        ent_vals.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
+        self.Columns = ent_vals
+
+        lbl_rows = Label(tab, text="Amount of rows:")
+        lbl_rows.grid(column=0, row=2, sticky=tk.W, padx=5, pady=5)
+        ent_rows = Entry(tab, width=50)
+        ent_rows.grid(column=1, row=2, sticky=tk.W, padx=5, pady=5)
+        self.Columns = ent_rows
+
+        btn_output_data = Button(tab, text="Choose data output directory", command=self.choose_data_output_directory)
+        btn_output_data.grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
+
+        lbl_path_data_out = Entry(tab, width=50, state='disabled')
+        lbl_path_data_out.grid(column=1, row=3, sticky=tk.W, padx=5, pady=5)
+        self.lbl_path_data_out = lbl_path_data_out
+
+        l1 = tk.Label(tab, width=0, height=1)
+        l1.grid(column=0, row=4)
+
+        var6 = IntVar()
+        var6.set(0)
+        c6 = tk.Checkbutton(tab, text='Open Folder', variable=var6)
+        c6.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
+
+        # btn_create_data = Button(tab, text="Create data...", command=self.create_tennis_data)
+        btn_create_data = Button(tab, text="Create data...", command=g.create_data(ent_cols.get(), ent_vals.get(), ent_rows.get(), lbl_path_data_out, c6.getvar))
+        btn_create_data.grid(column=1, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
         tab_control.add(tab, text="Input Data")
@@ -74,6 +112,7 @@ class GUI:
 
         # Checkbox create files in sub folder
         c1 = tk.Checkbutton(tab, text='Create files in sub folder')
+        c1.select()
         c1.grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
 
         # Blank line
@@ -82,15 +121,18 @@ class GUI:
 
         # Checkbox Create Solution File
         c2 = tk.Checkbutton(tab, text='Create Solution File')
+        c2.select()
         c2.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Checkbox Create Graph File
-        c4 = tk.Checkbutton(tab, text='Create Graph as PDF')
-        c4.grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
+        c3 = tk.Checkbutton(tab, text='Create Graph as PDF')
+        c3.select()
+        c3.grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
 
         # Checkbox Graph Preview
-        c3 = tk.Checkbutton(tab, text='Open Graph Preview')
-        c3.grid(column=1, row=6, sticky=tk.W, padx=5, pady=5)
+        c4 = tk.Checkbutton(tab, text='Open Graph Preview')
+        c4.select()
+        c4.grid(column=1, row=6, sticky=tk.W, padx=5, pady=5)
 
         # Blank line
         l3 = tk.Label(tab, width=0, height=1)
@@ -98,6 +140,7 @@ class GUI:
 
         # Checkbox Open output folder
         c5 = tk.Checkbutton(tab, text='Open output folder')
+        c5.select()
         c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Process Data
@@ -105,7 +148,7 @@ class GUI:
         btn_ok.grid(column=1, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Close
-        btn_close = Button(tab, text="Close", width=20, command=self.btn_close)
+        btn_close = Button(tab, text="Quit", width=20, command=self.btn_close)
         btn_close.grid(column=1, row=9, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
@@ -133,11 +176,20 @@ class GUI:
     def choose_output_directory(self):
         folder_selected = fd.askdirectory()
         l = len(folder_selected) + 5
-        self.lbl_path_out.config(state='normal')
-        self.lbl_path_out.config(width=l)
-        self.lbl_path_out.delete(0, END)
-        self.lbl_path_out.insert(0, folder_selected)
-        self.lbl_path_out.config(state='disabled')
+        self.lbl_path_data_out.config(state='normal')
+        self.lbl_path_data_out.config(width=l)
+        self.lbl_path_data_out.delete(0, END)
+        self.lbl_path_data_out.insert(0, folder_selected)
+        self.lbl_path_data_out.config(state='disabled')
+
+    def choose_data_output_directory(self):
+        folder_selected = fd.askdirectory()
+        l = len(folder_selected) + 5
+        self.lbl_path_data_out.config(state='normal')
+        self.lbl_path_data_out.config(width=l)
+        self.lbl_path_data_out.delete(0, END)
+        self.lbl_path_data_out.insert(0, folder_selected)
+        self.lbl_path_data_out.config(state='disabled')
 
     def set_output_directory(self, file):
         filepath = path.dirname(file)
@@ -181,7 +233,7 @@ class GUI:
         s: str = "Outlook;Temp;Humidity;Windy;Play;\n"
         self.output_file.write(s)
 
-        for i in range(30):
+        for i in range(100):
             o = outlook[r.randint(0, len(outlook))]
             t = temp[r.randint(0, len(temp))]
             h = humidity[r.randint(0, len(humidity))]
@@ -218,25 +270,27 @@ class GUI:
             val = str(val)
         return val
 
-    # def tree1(self, o, t, h, w):
-    #     if o == "Overcast":
-    #         p = "Yes"
-    #     elif o == "Rainy" and w == "False":
-    #         p = "Yes"
-    #     elif o == "Sunny" and h == "Normal":
-    #         p = "Yes"
-    #     else:
-    #         p = "No"
-    #
-    #     return p
-    #
-    # def tree2(self, o, t, h, w):
-    #     columns = ["Outlook", "Temp", "Humidity", "Windy"]
-    #     outlook = ["Sunny", "Overcast", "Rainy"]
-    #     temp = ["Hot", "Mild", "Cool"]
-    #     humidity = ["High", "Normal"]
-    #     windy = ["True", "False"]
-    #     pass
+    @staticmethod
+    def tree1(o, t, h, w):
+        if o == "Overcast":
+            p = "Yes"
+        elif o == "Rainy" and w == "False":
+            p = "Yes"
+        elif o == "Sunny" and h == "Normal":
+            p = "Yes"
+        else:
+            p = "No"
+
+        return p
+
+    @staticmethod
+    def tree2(o, t, h, w):
+        columns = ["Outlook", "Temp", "Humidity", "Windy"]
+        outlook = ["Sunny", "Overcast", "Rainy"]
+        temp = ["Hot", "Mild", "Cool"]
+        humidity = ["High", "Normal"]
+        windy = ["True", "False"]
+        pass
 
 
 # Main Method

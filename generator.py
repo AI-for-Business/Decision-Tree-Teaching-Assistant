@@ -4,6 +4,11 @@ from numpy import random as r
 
 
 def create_tennis_data(self):
+    """
+    This method was just for testing.
+    :param self:
+    :return:
+    """
     save_path: str = "C:/Users/Yorck Zisgen/Downloads"  # Get file path from user input via configuration manager
 
     # Create file name from current timestamp
@@ -54,13 +59,19 @@ def create_tennis_data(self):
 
 
 def generate_random_ruleset(columns: int, rows: int, values_per_column: int):
+    """
+    This method was just for testing.
+    :param columns:
+    :param rows:
+    :param values_per_column:
+    :return:
+    """
     # Step 1: Generate columns and value expressions
     # Step 2: Generate decision rules from step 1
     # Step 3: Randomize value expressions and calculate results from step 2
 
     cols = []  # List of all column headers
     col2val = {}  # Dictionary of column header -> list of different values in that column
-    rules = []  # [(column, value)]
 
     for i in range(columns):
         key = "col_" + str(i+1)
@@ -77,31 +88,74 @@ def generate_random_ruleset(columns: int, rows: int, values_per_column: int):
     # print(col2val)
 
 
+def create_data(columns: int, values: int, rows: int, data_path: str, cb: int) -> None:
+    """
+    This method gets called from the GUI, receives all user input, and starts to create synthetic data.
+    :param columns: Amount of columns to be created
+    :param values: Amount of different values in each column
+    :param rows: Amount of rows/lines to be randomly created
+    :param data_path: Output path, where the file is to be stored
+    :param cb: Checkbox. Integer 0/1. Denominates whether the output directory shall be opened in Explorer after file
+    has been created
+    :return: None
+    """
+
+    # LEGEND: Step description -> return type (where can the code snippet be found)
+    # Create file (create_tennis_data)
+    # Create column headers -> [str] (generate_random_ruleset)
+    # Create list of values in each column -> [[value]] & {str:[value]} (generate_random_ruleset)
+    # TODO: Define how many rules we need
+    # TODO: Create rule {int : str} as {index: column_value} (can be multiple in one dictionary) for AND rules
+    # TODO: Combine rules to ruleset as [rule], that is an array of dictionaries, each containing
+    #  one or multiple entries.
+    # Create (rows) amount of lines with random values in each columns (create_tennis_data)
+    # Pass each individual line to rules-checker to classify as yes/no (main)
+    # Save the classified line to file (create_tennis_data)
+    # Close file (create_tennis_data)
+    pass
+
+
+def create_file(data_path: str) -> None:
+    pass
+
+
+def create_columns(columns: int) -> list[str]:
+    pass
+
+
+def create_column_values(cols: list[str], values_per_column: int) -> list[list[str]]:
+    pass
+
+
+def close_file(data_path: str, cb: int) -> None:
+    pass
+
+
 # Main Method
 if __name__ == '__main__':
     # Todo: Delete this
-    generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
-
-    # 15:00 ABBA
-    # Zug: Auftrag von LL
-    # Zug: Detta coden
-
-    # Werte -> Regeln -> Ergebnisse -> Zeilen
-    # [cols]
-    # { col: [values] }
+    # generate_random_ruleset(6, 50, 5)  # columns, rows, values_per_column
 
     test_dict = {
-        "a": [1, 2, 3],
-        "b": ["Alpha", "Beta", "Gamma"],
-        "c": 0.15,
-        "d": "Mustang",
-        "e": False,
-        "f": 400
+        0: "medium",
+        1: "rainy",
+        2: "test"
     }
+    dict2 = {
+        2: "sunny"
+    }
+    rules = [test_dict, dict2]
 
-    # print(test_dict)
-    # print(test_dict["f"]*5)
-    # test_dict.update({"key": "value"})
-    # test_dict["b"].append("Delta")
-    # print(r.choice(test_dict["b"]))
-    # print(test_dict)
+    line_1 = ["medium", "sunny", "test"]
+    line_2 = ["high", "sunny"]
+
+    for r in rules:
+        classification = True
+        for k, v in r.items():
+            # print(k, v)
+            if classification:
+                if str(line_1[k]) == v:
+                    pass
+                else:
+                    classification = False
+        print(classification)
