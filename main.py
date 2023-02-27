@@ -151,7 +151,8 @@ def test_subsets(ds: pd.DataFrame):
 
 # Main Method: This is where you start the Decision Tree Teaching Assistant
 if __name__ == '__main__':
-    df1 = read_data_set('C:/Users/yorck/Downloads/DeTTA-Data/tennis.csv')
+    # df1 = read_data_set('C:/Users/yorck/Downloads/DeTTA-Data/tennis.csv')
+    df1 = read_data_set('C:/Users/Yorck Zisgen/Downloads/Data_2023.02.20-11.49.43.csv')
     print(df1)
 
     # df2 = pd.read_csv('C:/Users/yorck/Downloads/tennis.csv')

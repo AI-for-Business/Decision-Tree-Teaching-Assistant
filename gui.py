@@ -1,14 +1,21 @@
-import tkinter as tk
 from tkinter import filedialog as fd
 from tkinter import Button, Entry, END, ttk
+from os import path
+from datetime import datetime
+from numpy import random as r
+import tkinter as tk
+import typing
+import generator as g
+# import solver as s
 
 
 class GUI:
     def __init__(self):
         # Create main GUI frame
         self.root = tk.Tk()
-        self.root.title("DeTTA - Decision Tree Teaching Assistant")
         # self.root.geometry("640x480")
+        # self.root.config(background='blue')
+        self.root.title("DeTTA - Decision Tree Teaching Assistant")
 
         # Interactive GUI elements
         self.lbl_file_in = None
@@ -20,14 +27,20 @@ class GUI:
         self.process_tab = self.create_process_tab(self.tab_control)
         self.tab_control.grid()
 
+        # Filehandler for data generation
+        self.output_file: typing.TextIO | None = None
+
         # Start the GUI
         self.root.mainloop()
 
     def create_input_tab(self, tab_control: ttk.Notebook):
         # Create the frame
         tab = ttk.Frame(tab_control)
+        btn_tennis = Button(tab, text="Create tennis data...", command=self.create_tennis_data)
+        # btn_tennis = Button(tab, text="Create tennis data...", command=g.create_tennis_data)
+        btn_tennis.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
 
-        # Todo
+        # Todo Create content of input tab
 
         # Add the frame to the frame tab controller
         tab_control.add(tab, text="Input Data")
@@ -88,7 +101,7 @@ class GUI:
         c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Process Data
-        btn_ok = Button(tab, text="Process Data", width=20, command=self.btn_process_data())
+        btn_ok = Button(tab, text="Process Data", width=20, command=self.btn_process_data)
         btn_ok.grid(column=1, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Close
@@ -108,6 +121,15 @@ class GUI:
         self.lbl_file_in.insert(0, file_selected)
         self.lbl_file_in.config(state='disabled')
 
+    def set_input_file(self, file):
+        l = len(file) + 5
+        self.lbl_file_in.config(state='normal')
+        self.lbl_file_in.config(width=l)
+        self.lbl_file_in.delete(0, END)
+        self.lbl_file_in.insert(0, file)
+        self.lbl_file_in.config(state='disabled')
+        self.set_output_directory(file)
+
     def choose_output_directory(self):
         folder_selected = fd.askdirectory()
         l = len(folder_selected) + 5
@@ -117,12 +139,104 @@ class GUI:
         self.lbl_path_out.insert(0, folder_selected)
         self.lbl_path_out.config(state='disabled')
 
+    def set_output_directory(self, file):
+        filepath = path.dirname(file)
+        l = len(filepath) + 5
+        self.lbl_path_out.config(state='normal')
+        self.lbl_path_out.config(width=l)
+        self.lbl_path_out.delete(0, END)
+        self.lbl_path_out.insert(0, filepath)
+        self.lbl_path_out.config(state='disabled')
+
     def btn_close(self):
         self.root.quit()
 
     def btn_process_data(self):
-        # Todo
+        # Todo Create method 'process data'
         pass
+
+    def create_tennis_data(self):
+        save_path: str = "C:/Users/Yorck Zisgen/Downloads"  # Get file path from user input via configuration manager
+
+        # Create file name from current timestamp
+        d1: datetime = datetime.now()
+        y: str = str(d1.year)
+        mo: str = self.convert(d1.month)
+        d: str = self.convert(d1.day)
+        h: str = self.convert(d1.hour)
+        mi: str = self.convert(d1.minute)
+        s: str = self.convert(d1.second)
+
+        # File name
+        file_name: str = "Data_" + y + "." + mo + "." + d + "-" + h + "." + mi + "." + s + ".csv"
+
+        # Creating file names for valid and noisy sensor logs and trace log
+        fn: str = path.join(save_path, file_name)  # Create file handler
+        self.output_file = open(fn, "w")
+
+        outlook = ["Sunny", "Overcast", "Rainy"]
+        temp = ["Hot", "Mild", "Cool"]
+        humidity = ["High", "Normal"]
+        windy = ["True", "False"]
+        s: str = "Outlook;Temp;Humidity;Windy;Play;\n"
+        self.output_file.write(s)
+
+        for i in range(30):
+            o = outlook[r.randint(0, len(outlook))]
+            t = temp[r.randint(0, len(temp))]
+            h = humidity[r.randint(0, len(humidity))]
+            w = windy[r.randint(0, len(windy))]
+
+            if o == "Overcast":
+                p = "Yes"
+            elif o == "Rainy" and w == "False":
+                p = "Yes"
+            elif o == "Sunny" and h == "Normal":
+                p = "Yes"
+            else:
+                p = "No"
+
+            # p = self.tree1(o, t, h, w)
+
+            s: str = o + ";" + t + ";" + h + ";" + w + ";" + p + "\n"
+            self.output_file.write(s)
+
+        self.output_file.close()
+        self.set_input_file(self.output_file.name)
+
+    @staticmethod
+    def convert(val: int) -> str:
+        """
+        Methods converts an integer to a string, adding a preceding zero if the integer is single-digit
+        :param val: Integer value to be converted, e.g. '5' or '12'
+        :return: A two-digit string, e.g. '05' or '12'.
+        """
+        # Add a leading zero to values below 10 for a uniform appearance of file names
+        if val < 10:
+            val = "0" + str(val)
+        else:
+            val = str(val)
+        return val
+
+    # def tree1(self, o, t, h, w):
+    #     if o == "Overcast":
+    #         p = "Yes"
+    #     elif o == "Rainy" and w == "False":
+    #         p = "Yes"
+    #     elif o == "Sunny" and h == "Normal":
+    #         p = "Yes"
+    #     else:
+    #         p = "No"
+    #
+    #     return p
+    #
+    # def tree2(self, o, t, h, w):
+    #     columns = ["Outlook", "Temp", "Humidity", "Windy"]
+    #     outlook = ["Sunny", "Overcast", "Rainy"]
+    #     temp = ["Hot", "Mild", "Cool"]
+    #     humidity = ["High", "Normal"]
+    #     windy = ["True", "False"]
+    #     pass
 
 
 # Main Method

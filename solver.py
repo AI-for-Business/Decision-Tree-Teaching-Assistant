@@ -2,7 +2,6 @@ import math
 import pandas as pd
 from graphviz import Source
 
-
 # Creates the decision tree. The argument root_id_suffix is necessary to distinguish different nodes
 # with the same name by adding the root_id_suffix to the name of the node to create a unique id
 # for the node.
