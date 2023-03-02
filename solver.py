@@ -1,6 +1,7 @@
 import math
 import pandas as pd
 from graphviz import Source
+import csv
 
 # Wurzel = leerer Baum
 # Subset = {Dataset}
@@ -346,37 +347,66 @@ def decision_tree_calculation(df: pd.DataFrame, compact_log: bool):
     f.close()
 
 
+# Read data from a CSV file
+def read_csv_file(path: str) -> pd.DataFrame:
+    with open(path, newline='') as f:
+        reader = csv.reader(f)
+        cols = next(reader)
+        cols = cols[0].split(";")
+        rows = []
+        for row in reader:
+            row = row[0].split(";")
+            rows.append(row)
+        df = pd.DataFrame(rows, columns=cols)
+        return df
+
+
+def process_data(path: str, compact_log: bool) -> None:
+    df = read_csv_file(path)
+    decision_tree_calculation(df, compact_log)
+
+    beginning_of_data_name = 0
+    for i in range(len(path)):
+        if path[i] == '/':
+            beginning_of_data_name = i
+    tree_path = path[:beginning_of_data_name] + "/tree.dot"
+    Source.from_file(tree_path).view()
+
+
 # input for tests
 
-# classical play tennis data set
-data = {
-    "Outlook": ["Sunny", "Sunny", "Overcast", "Rain", "Rain", "Rain", "Overcast",
-                "Sunny", "Sunny", "Rain", "Sunny", "Overcast", "Overcast", "Rain"],
-    "Temperature": ["Hot", "Hot", "Hot", "Mild", "Cool", "Cool", "Cool",
-                    "Mild", "Cool", "Mild", "Mild", "Mild", "Hot", "Mild"],
-    "Humidity": ["High", "High", "High", "High", "Normal", "Normal", "Normal",
-                 "High", "Normal", "Normal", "Normal", "High", "Normal", "High"],
-    "Wind": ["Weak", "Strong", "Weak", "Weak", "Weak", "Strong", "Strong",
-             "Weak", "Weak", "Weak", "Strong", "Strong", "Weak", "Strong"],
-    "PlayTennis": ["No", "No", "Yes", "Yes", "Yes", "No", "Yes",
-                   "No", "Yes", "Yes", "Yes", "Yes", "Yes", "No"]
-}
-
-# second data set (notes for Dennis: der gleiche Datensatz, wie aus der 5. KDDM-
-# Übung mit einem weiteren Datum am Ende, um den Fall len(cols) == 2 abzudecken
-data2 = {
-    "Experience": ["1-2", "2-7", ">7", "1-2", ">7", "1-2", "2-7", "2-7", ">7"],
-    "Gender": ["m", "m", "f", "f", "m", "m", "f", "m", "f"],
-    "Area": ["u", "r", "r", "r", "r", "r", "u", "u", "r"],  # u=urban, r=rural
-    "Risk class": ["l", "h", "l", "h", "h", "h", "l", "l", "h"]  # h=high, l=low
-}
-data_arg: pd.DataFrame = pd.DataFrame(data)  # the dataframe for data
-data_arg2: pd.DataFrame = pd.DataFrame(data2)  # the dataframe for data2
-root_id_suffix_arg = ""  # second argument of the function
-
-
-# run the classification algorithm on the data set and get the decision tree and log file
-decision_tree_calculation(data_arg, compact_log=True)
-# Render the graph from the dot file.
-path = 'tree.dot'
-Source.from_file(path).view()
+# # classical play tennis data set
+# data = {
+#     "Outlook": ["Sunny", "Sunny", "Overcast", "Rain", "Rain", "Rain", "Overcast",
+#                 "Sunny", "Sunny", "Rain", "Sunny", "Overcast", "Overcast", "Rain"],
+#     "Temperature": ["Hot", "Hot", "Hot", "Mild", "Cool", "Cool", "Cool",
+#                     "Mild", "Cool", "Mild", "Mild", "Mild", "Hot", "Mild"],
+#     "Humidity": ["High", "High", "High", "High", "Normal", "Normal", "Normal",
+#                  "High", "Normal", "Normal", "Normal", "High", "Normal", "High"],
+#     "Wind": ["Weak", "Strong", "Weak", "Weak", "Weak", "Strong", "Strong",
+#              "Weak", "Weak", "Weak", "Strong", "Strong", "Weak", "Strong"],
+#     "PlayTennis": ["No", "No", "Yes", "Yes", "Yes", "No", "Yes",
+#                    "No", "Yes", "Yes", "Yes", "Yes", "Yes", "No"]
+# }
+#
+# # second data set (notes for Dennis: der gleiche Datensatz, wie aus der 5. KDDM-
+# # Übung mit einem weiteren Datum am Ende, um den Fall len(cols) == 2 abzudecken
+# data2 = {
+#     "Experience": ["1-2", "2-7", ">7", "1-2", ">7", "1-2", "2-7", "2-7", ">7"],
+#     "Gender": ["m", "m", "f", "f", "m", "m", "f", "m", "f"],
+#     "Area": ["u", "r", "r", "r", "r", "r", "u", "u", "r"],  # u=urban, r=rural
+#     "Risk class": ["l", "h", "l", "h", "h", "h", "l", "l", "h"]  # h=high, l=low
+# }
+#
+# data_arg: pd.DataFrame = pd.DataFrame(data)  # the dataframe for data
+# data_arg2: pd.DataFrame = pd.DataFrame(data2)  # the dataframe for data2
+# data_arg3: pd.DataFrame = read_csv_file("Data_2023.3.1-17.50.46.csv")
+# root_id_suffix_arg = ""  # second argument of the function
+#
+#
+#
+# # run the classification algorithm on the data set and get the decision tree and log file
+# decision_tree_calculation(data_arg3, compact_log=True)
+# # Render the graph from the dot file.
+# file_path = 'tree.dot'
+# Source.from_file(file_path).view()

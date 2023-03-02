@@ -4,7 +4,7 @@ from os import path
 from numpy import random as r
 
 
-def create_data(columns: int, values: int, rows: int, data_path: str, cb: int) -> None:
+def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     """
     This method gets called from the GUI, receives all user input, and starts to create synthetic data.
     :param columns: Amount of columns to be created
@@ -150,4 +150,4 @@ def save_file(fn: str, rows: [[]]) -> None:
     output_file.close()
 
 
-create_data(5, 5, 100, "", 0)
+# create_data(10, 10, 1000, "/home/dennis/MEGA/Hiwi/DeTTA")

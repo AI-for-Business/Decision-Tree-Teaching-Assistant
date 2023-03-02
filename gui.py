@@ -6,7 +6,7 @@ from numpy import random as r
 import tkinter as tk
 import typing
 import generator as g
-# import solver as s
+import solver as s
 
 
 class GUI:
@@ -45,26 +45,30 @@ class GUI:
 
         lbl_cols = Label(tab, text="Amount of columns:")
         lbl_cols.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
-        ent_cols = Entry(tab, width=50)
+        ent_cols_val = tk.IntVar()
+        ent_cols = Entry(tab, width=50, textvariable=ent_cols_val)
         ent_cols.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
         self.Columns = ent_cols
 
         lbl_vals = Label(tab, text="Different values per column:")
         lbl_vals.grid(column=0, row=1, sticky=tk.W, padx=5, pady=5)
-        ent_vals = Entry(tab, width=50)
+        ent_vals_val = tk.IntVar()
+        ent_vals = Entry(tab, width=50, textvariable=ent_vals_val)
         ent_vals.grid(column=1, row=1, sticky=tk.W, padx=5, pady=5)
         self.Columns = ent_vals
 
         lbl_rows = Label(tab, text="Amount of rows:")
         lbl_rows.grid(column=0, row=2, sticky=tk.W, padx=5, pady=5)
-        ent_rows = Entry(tab, width=50)
+        ent_rows_val = tk.IntVar()
+        ent_rows = Entry(tab, width=50, textvariable=ent_rows_val)
         ent_rows.grid(column=1, row=2, sticky=tk.W, padx=5, pady=5)
         self.Columns = ent_rows
 
         btn_output_data = Button(tab, text="Choose data output directory", command=self.choose_data_output_directory)
         btn_output_data.grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
 
-        lbl_path_data_out = Entry(tab, width=50, state='disabled')
+        lbl_path_data_out_val = tk.StringVar()
+        lbl_path_data_out = Entry(tab, width=50, state='disabled', textvariable=lbl_path_data_out_val)
         lbl_path_data_out.grid(column=1, row=3, sticky=tk.W, padx=5, pady=5)
         self.lbl_path_data_out = lbl_path_data_out
 
@@ -76,8 +80,8 @@ class GUI:
         c6 = tk.Checkbutton(tab, text='Open Folder', variable=var6)
         c6.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
 
-        # btn_create_data = Button(tab, text="Create data...", command=self.create_tennis_data)
-        btn_create_data = Button(tab, text="Create data...", command=g.create_data(ent_cols.get(), ent_vals.get(), ent_rows.get(), lbl_path_data_out, c6.getvar))
+        btn_create_data = Button(tab, text="Create data...", command=lambda: g.create_data(ent_cols_val.get(), ent_vals_val.get(), ent_rows_val.get(), lbl_path_data_out_val.get()))
+        # btn_create_data = Button(tab, text="Create data...", command=lambda: print(type(ent_cols.get()), ent_vals.get(), ent_rows.get(), "\"" + lbl_path_data_out.get() + "\""))
         btn_create_data.grid(column=1, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
@@ -94,7 +98,8 @@ class GUI:
         btn_input = Button(tab, text="Choose input file...", command=self.choose_input_file)
         btn_input.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
 
-        lbl_file_in = Entry(tab, width=50, state='disabled')
+        lbl_file_in_val = tk.StringVar()
+        lbl_file_in = Entry(tab, width=50, state='disabled', textvariable=lbl_file_in_val)
         lbl_file_in.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
         self.lbl_file_in = lbl_file_in
 
@@ -144,7 +149,8 @@ class GUI:
         c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Process Data
-        btn_ok = Button(tab, text="Process Data", width=20, command=self.btn_process_data)
+        btn_ok = Button(tab, text="Process Data", width=20, command=lambda: s.process_data(lbl_file_in_val.get(), True))
+        # btn_ok = Button(tab, text="Process Data", width=20, command=lambda: print(lbl_path_out_val.get()))
         btn_ok.grid(column=1, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Close
@@ -202,10 +208,6 @@ class GUI:
 
     def btn_close(self):
         self.root.quit()
-
-    def btn_process_data(self):
-        # Todo Create method 'process data'
-        pass
 
     def create_tennis_data(self):
         save_path: str = "C:/Users/Yorck Zisgen/Downloads"  # Get file path from user input via configuration manager
