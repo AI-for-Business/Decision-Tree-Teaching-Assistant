@@ -2,6 +2,8 @@ import math
 import pandas as pd
 from graphviz import Source
 import csv
+import os
+import shutil
 
 # Wurzel = leerer Baum
 # Subset = {Dataset}
@@ -323,23 +325,33 @@ def decision_tree_calculation_compact_log(subset: pd.DataFrame, root_id_suffix: 
 
 # Calculates the decision tree returning the dot file and creates depending on the input argument
 # either a compact or a detailed log file.
-def decision_tree_calculation(df: pd.DataFrame, compact_log: bool):
+def decision_tree_calculation(input_path: str, detailed_log: bool, output_dir: str):
+    # data management
+    df: pd.DataFrame = read_csv_file(input_path)
+    input_file_name = os.path.basename(input_path)
+
     # calculation
-    if compact_log:
-        output = decision_tree_calculation_compact_log(df, "")
-    else:
+    if detailed_log:
         output = decision_tree_calculation_detailed_log(df, "")
+    else:
+        output = decision_tree_calculation_compact_log(df, "")
 
     # create the log file
+    if detailed_log:
+        log_type = "detailed"
+    else:
+        log_type = "compact"
     log = output[2]
-    f = open("log.txt", "w")
+    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+    f = open(log_path, "w")
     for line in log:
         f.write(line + "\n")
     f.close()
 
     # create the dot file for the tree
     dot_text = output[1]
-    f = open("tree.dot", "w")
+    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
+    f = open(dot_path, "w")
     f.write("digraph G {\n")
     for line in dot_text:
         f.write("\t" + line + "\n")
@@ -361,16 +373,79 @@ def read_csv_file(path: str) -> pd.DataFrame:
         return df
 
 
-def process_data(path: str, compact_log: bool) -> None:
-    df = read_csv_file(path)
-    decision_tree_calculation(df, compact_log)
+def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool, graph_preview: bool, dot: bool, sub_folder: bool) -> None:
+    # invalid file paths
+    if input_path == "" or output_dir == "":
+        return
 
-    beginning_of_data_name = 0
-    for i in range(len(path)):
-        if path[i] == '/':
-            beginning_of_data_name = i
-    tree_path = path[:beginning_of_data_name] + "/tree.dot"
-    Source.from_file(tree_path).view()
+    # file names and file paths
+    input_file_name = os.path.basename(input_path)
+    if detailed_log:
+        log_type = "detailed"
+    else:
+        log_type = "compact"
+    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
+
+    # corner case (Randfall): data is first created not in a sub folder and then in a sub folder:
+    # In order to prevent data to be deleted from the not sub folder when being moved to the sub folder
+    # we need to remember that the data already existed before in the not sub folder.
+    if os.path.exists(log_path):
+        log_already_existent = True
+    else:
+        log_already_existent = False
+    if os.path.exists(dot_path):
+        dot_already_existent = True
+    else:
+        dot_already_existent = False
+
+    # decision tree creation together with log and dot file
+    decision_tree_calculation(input_path, detailed_log, output_dir)
+
+    # svg file creation
+    if svg and not sub_folder:
+        dot_source = Source.from_file(dot_path, format='svg')
+        if graph_preview:
+            dot_source.view(dot_path[:-4], cleanup=True)
+        else:
+            dot_source.render(dot_path[:-4], cleanup=True)
+
+    # move all files to a sub folder when flag is true
+    if sub_folder:
+
+        # create directory
+        sub_folder_dir = input_path[:-4] + "_processed"
+        if not os.path.exists(sub_folder_dir):
+            os.mkdir(sub_folder_dir)
+
+        # log file
+        new_path_log_file = sub_folder_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+        if log_already_existent:
+            shutil.copy2(log_path, new_path_log_file)
+        else:
+            os.replace(log_path, new_path_log_file)
+
+        # svg file
+        if svg:
+            dot_source = Source.from_file(dot_path, format='svg')
+            svg_path = sub_folder_dir + "/" + input_file_name[:-4]
+            if graph_preview:
+                dot_source.view(svg_path, cleanup=True)
+            else:
+                dot_source.render(svg_path)
+
+        # dot file
+        if dot:
+            new_dot_path = sub_folder_dir + "/" + input_file_name[:-3] + "dot"
+            if dot_already_existent:
+                shutil.copy2(dot_path, new_dot_path)
+            else:
+                os.replace(dot_path, new_dot_path)
+
+    # delete dot file when boolean flag is true
+    if not dot:
+        os.remove(dot_path)
+
 
 
 # input for tests

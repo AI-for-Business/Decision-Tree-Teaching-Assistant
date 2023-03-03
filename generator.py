@@ -7,6 +7,7 @@ from numpy import random as r
 def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     """
     This method gets called from the GUI, receives all user input, and starts to create synthetic data.
+    Nothing happens when invalid arguments are given.
     :param columns: Amount of columns to be created
     :param values: Amount of different values in each column
     :param rows: Amount of rows/lines to be randomly created
@@ -15,6 +16,10 @@ def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     has been created (not implemented because every OS needs to be handled separately)
     :return: None
     """
+
+    # invalid parameters
+    if columns <= 0 or values <= 0 or rows <= 0 or data_path == "":
+        return
 
     file_path = create_file(data_path)
     cols = create_columns(columns)

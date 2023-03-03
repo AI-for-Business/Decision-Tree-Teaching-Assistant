@@ -75,13 +75,14 @@ class GUI:
         l1 = tk.Label(tab, width=0, height=1)
         l1.grid(column=0, row=4)
 
-        var6 = IntVar()
-        var6.set(0)
-        c6 = tk.Checkbutton(tab, text='Open Folder', variable=var6)
-        c6.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
+        # var6 = IntVar()
+        # var6.set(0)
+        # c6 = tk.Checkbutton(tab, text='Open Folder', variable=var6)
+        # c6.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
 
         btn_create_data = Button(tab, text="Create data...", command=lambda: g.create_data(ent_cols_val.get(), ent_vals_val.get(), ent_rows_val.get(), lbl_path_data_out_val.get()))
-        # btn_create_data = Button(tab, text="Create data...", command=lambda: print(type(ent_cols.get()), ent_vals.get(), ent_rows.get(), "\"" + lbl_path_data_out.get() + "\""))
+        # btn_create_data = Button(tab, text="Create data...",
+        #                          command=lambda: print(lbl_path_data_out_val.get()))
         btn_create_data.grid(column=1, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
@@ -111,12 +112,14 @@ class GUI:
         btn_output = Button(tab, text="Choose output directory...", command=self.choose_output_directory)
         btn_output.grid(column=0, row=2, sticky=tk.W, padx=5, pady=5)
 
-        lbl_path_out = Entry(tab, width=50, state='disabled')
+        lbl_path_out_val = tk.StringVar()
+        lbl_path_out = Entry(tab, width=50, state='disabled', textvariable=lbl_path_out_val)
         lbl_path_out.grid(column=1, row=2, sticky=tk.W, padx=5, pady=5)
         self.lbl_path_out = lbl_path_out
 
         # Checkbox create files in sub folder
-        c1 = tk.Checkbutton(tab, text='Create files in sub folder')
+        c1_val = tk.BooleanVar()
+        c1 = tk.Checkbutton(tab, text='Create files in sub folder', variable=c1_val)
         c1.select()
         c1.grid(column=0, row=3, sticky=tk.W, padx=5, pady=5)
 
@@ -124,42 +127,55 @@ class GUI:
         l2 = tk.Label(tab, width=0, height=1)
         l2.grid(column=0, row=4)
 
-        # Checkbox Create Solution File
-        c2 = tk.Checkbutton(tab, text='Create Solution File')
-        c2.select()
+        # Checkbox Create detailed Solution File
+        c2_val = tk.BooleanVar()
+        c2 = tk.Checkbutton(tab, text='Create Detailed Solution File', variable=c2_val)
         c2.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
 
+        def toggle_cb_graph_preview():
+            if not c3_val.get():
+                c4.grid_remove()
+            else:
+                c4.grid()
+
         # Checkbox Create Graph File
-        c3 = tk.Checkbutton(tab, text='Create Graph as PDF')
+        c3_val = tk.BooleanVar()
+        c3 = tk.Checkbutton(tab, text='Create Graph as SVG', variable=c3_val, command=toggle_cb_graph_preview)
         c3.select()
         c3.grid(column=0, row=6, sticky=tk.W, padx=5, pady=5)
 
         # Checkbox Graph Preview
-        c4 = tk.Checkbutton(tab, text='Open Graph Preview')
+        c4_val = tk.BooleanVar()
+        c4 = tk.Checkbutton(tab, text='Open Graph Preview', variable=c4_val)
         c4.select()
         c4.grid(column=1, row=6, sticky=tk.W, padx=5, pady=5)
 
-        # Blank line
-        l3 = tk.Label(tab, width=0, height=1)
-        l3.grid(column=0, row=7)
+        # Checkbox DOT file
+        c5_val = tk.BooleanVar()
+        c5 = tk.Checkbutton(tab, text="Create DOT file", variable=c5_val)
+        c5.grid(column=0, row=7, sticky=tk.W, padx=5, pady=5)
 
-        # Checkbox Open output folder
-        c5 = tk.Checkbutton(tab, text='Open output folder')
-        c5.select()
-        c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
+        # # Blank line
+        # l3 = tk.Label(tab, width=0, height=1)
+        # l3.grid(column=0, row=7)
+
+        # # Checkbox Open output folder
+        # c5 = tk.Checkbutton(tab, text='Open output folder')
+        # c5.select()
+        # c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Process Data
-        btn_ok = Button(tab, text="Process Data", width=20, command=lambda: s.process_data(lbl_file_in_val.get(), True))
-        # btn_ok = Button(tab, text="Process Data", width=20, command=lambda: print(lbl_path_out_val.get()))
+        btn_ok = Button(tab, text="Process Data", width=20, command=lambda: s.process_data(lbl_file_in_val.get(), c2_val.get(), lbl_path_out_val.get(), c3_val.get(), c4_val.get(), c5_val.get(), c1_val.get()))
         btn_ok.grid(column=1, row=8, sticky=tk.W, padx=5, pady=5)
 
         # Button Close
-        btn_close = Button(tab, text="Quit", width=20, command=self.btn_close)
+        btn_close = Button(tab, text="Quit", width=20, command=lambda: self.btn_close(c3_val.get(), c4_val.get(), c1_val.get()))  # see the def of btn_close() on why it has arguments
         btn_close.grid(column=1, row=9, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
         tab_control.add(tab, text="Process Data")
         return tab
+
 
     def choose_input_file(self):
         file_selected = fd.askopenfilename()
@@ -182,11 +198,11 @@ class GUI:
     def choose_output_directory(self):
         folder_selected = fd.askdirectory()
         l = len(folder_selected) + 5
-        self.lbl_path_data_out.config(state='normal')
-        self.lbl_path_data_out.config(width=l)
-        self.lbl_path_data_out.delete(0, END)
-        self.lbl_path_data_out.insert(0, folder_selected)
-        self.lbl_path_data_out.config(state='disabled')
+        self.lbl_path_out.config(state='normal')
+        self.lbl_path_out.config(width=l)
+        self.lbl_path_out.delete(0, END)
+        self.lbl_path_out.insert(0, folder_selected)
+        self.lbl_path_out.config(state='disabled')
 
     def choose_data_output_directory(self):
         folder_selected = fd.askdirectory()
@@ -206,7 +222,8 @@ class GUI:
         self.lbl_path_out.insert(0, filepath)
         self.lbl_path_out.config(state='disabled')
 
-    def btn_close(self):
+    # Requires the booleans in order for the c3.select(), c4.select() and c1.select() to work for some reason.
+    def btn_close(self, c3_dummy: bool, c4_dummy: bool, c1_dummy: bool):
         self.root.quit()
 
     def create_tennis_data(self):
