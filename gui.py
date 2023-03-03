@@ -1,8 +1,5 @@
 from tkinter import filedialog as fd
-from tkinter import Button, Entry, END, ttk, Label, IntVar
-from os import path
-from datetime import datetime
-from numpy import random as r
+from tkinter import Button, Entry, END, ttk, Label
 import tkinter as tk
 import typing
 import generator as g
@@ -21,9 +18,9 @@ class GUI:
         self.lbl_file_in = None
         self.lbl_path_out = None
         self.lbl_path_data_out = None
-        self.Columns: Entry = None
-        self.Rows: Entry = None
-        self.Values: Entry = None
+        self.Columns: Entry | None = None
+        self.Rows: Entry | None = None
+        self.Values: Entry | None = None
 
         # Create tab control element
         self.tab_control = ttk.Notebook(self.root)
@@ -75,14 +72,7 @@ class GUI:
         l1 = tk.Label(tab, width=0, height=1)
         l1.grid(column=0, row=4)
 
-        # var6 = IntVar()
-        # var6.set(0)
-        # c6 = tk.Checkbutton(tab, text='Open Folder', variable=var6)
-        # c6.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
-
         btn_create_data = Button(tab, text="Create data...", command=lambda: g.create_data(ent_cols_val.get(), ent_vals_val.get(), ent_rows_val.get(), lbl_path_data_out_val.get()))
-        # btn_create_data = Button(tab, text="Create data...",
-        #                          command=lambda: print(lbl_path_data_out_val.get()))
         btn_create_data.grid(column=1, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
@@ -132,6 +122,7 @@ class GUI:
         c2 = tk.Checkbutton(tab, text='Create Detailed Solution File', variable=c2_val)
         c2.grid(column=0, row=5, sticky=tk.W, padx=5, pady=5)
 
+        # Displays the checkbox for the graph preview when c3 is checked.
         def toggle_cb_graph_preview():
             if not c3_val.get():
                 c4.grid_remove()
@@ -155,15 +146,6 @@ class GUI:
         c5 = tk.Checkbutton(tab, text="Create DOT file", variable=c5_val)
         c5.grid(column=0, row=7, sticky=tk.W, padx=5, pady=5)
 
-        # # Blank line
-        # l3 = tk.Label(tab, width=0, height=1)
-        # l3.grid(column=0, row=7)
-
-        # # Checkbox Open output folder
-        # c5 = tk.Checkbutton(tab, text='Open output folder')
-        # c5.select()
-        # c5.grid(column=0, row=8, sticky=tk.W, padx=5, pady=5)
-
         # Button Process Data
         btn_ok = Button(tab, text="Process Data", width=20, command=lambda: s.process_data(lbl_file_in_val.get(), c2_val.get(), lbl_path_out_val.get(), c3_val.get(), c4_val.get(), c5_val.get(), c1_val.get()))
         btn_ok.grid(column=1, row=8, sticky=tk.W, padx=5, pady=5)
@@ -176,7 +158,6 @@ class GUI:
         tab_control.add(tab, text="Process Data")
         return tab
 
-
     def choose_input_file(self):
         file_selected = fd.askopenfilename()
         l = len(file_selected) + 5
@@ -185,15 +166,6 @@ class GUI:
         self.lbl_file_in.delete(0, END)
         self.lbl_file_in.insert(0, file_selected)
         self.lbl_file_in.config(state='disabled')
-
-    def set_input_file(self, file):
-        l = len(file) + 5
-        self.lbl_file_in.config(state='normal')
-        self.lbl_file_in.config(width=l)
-        self.lbl_file_in.delete(0, END)
-        self.lbl_file_in.insert(0, file)
-        self.lbl_file_in.config(state='disabled')
-        self.set_output_directory(file)
 
     def choose_output_directory(self):
         folder_selected = fd.askdirectory()
@@ -213,103 +185,9 @@ class GUI:
         self.lbl_path_data_out.insert(0, folder_selected)
         self.lbl_path_data_out.config(state='disabled')
 
-    def set_output_directory(self, file):
-        filepath = path.dirname(file)
-        l = len(filepath) + 5
-        self.lbl_path_out.config(state='normal')
-        self.lbl_path_out.config(width=l)
-        self.lbl_path_out.delete(0, END)
-        self.lbl_path_out.insert(0, filepath)
-        self.lbl_path_out.config(state='disabled')
-
     # Requires the booleans in order for the c3.select(), c4.select() and c1.select() to work for some reason.
     def btn_close(self, c3_dummy: bool, c4_dummy: bool, c1_dummy: bool):
         self.root.quit()
-
-    def create_tennis_data(self):
-        save_path: str = "C:/Users/Yorck Zisgen/Downloads"  # Get file path from user input via configuration manager
-
-        # Create file name from current timestamp
-        d1: datetime = datetime.now()
-        y: str = str(d1.year)
-        mo: str = self.convert(d1.month)
-        d: str = self.convert(d1.day)
-        h: str = self.convert(d1.hour)
-        mi: str = self.convert(d1.minute)
-        s: str = self.convert(d1.second)
-
-        # File name
-        file_name: str = "Data_" + y + "." + mo + "." + d + "-" + h + "." + mi + "." + s + ".csv"
-
-        # Creating file names for valid and noisy sensor logs and trace log
-        fn: str = path.join(save_path, file_name)  # Create file handler
-        self.output_file = open(fn, "w")
-
-        outlook = ["Sunny", "Overcast", "Rainy"]
-        temp = ["Hot", "Mild", "Cool"]
-        humidity = ["High", "Normal"]
-        windy = ["True", "False"]
-        s: str = "Outlook;Temp;Humidity;Windy;Play;\n"
-        self.output_file.write(s)
-
-        for i in range(100):
-            o = outlook[r.randint(0, len(outlook))]
-            t = temp[r.randint(0, len(temp))]
-            h = humidity[r.randint(0, len(humidity))]
-            w = windy[r.randint(0, len(windy))]
-
-            if o == "Overcast":
-                p = "Yes"
-            elif o == "Rainy" and w == "False":
-                p = "Yes"
-            elif o == "Sunny" and h == "Normal":
-                p = "Yes"
-            else:
-                p = "No"
-
-            # p = self.tree1(o, t, h, w)
-
-            s: str = o + ";" + t + ";" + h + ";" + w + ";" + p + "\n"
-            self.output_file.write(s)
-
-        self.output_file.close()
-        self.set_input_file(self.output_file.name)
-
-    @staticmethod
-    def convert(val: int) -> str:
-        """
-        Methods converts an integer to a string, adding a preceding zero if the integer is single-digit
-        :param val: Integer value to be converted, e.g. '5' or '12'
-        :return: A two-digit string, e.g. '05' or '12'.
-        """
-        # Add a leading zero to values below 10 for a uniform appearance of file names
-        if val < 10:
-            val = "0" + str(val)
-        else:
-            val = str(val)
-        return val
-
-    @staticmethod
-    def tree1(o, t, h, w):
-        if o == "Overcast":
-            p = "Yes"
-        elif o == "Rainy" and w == "False":
-            p = "Yes"
-        elif o == "Sunny" and h == "Normal":
-            p = "Yes"
-        else:
-            p = "No"
-
-        return p
-
-    @staticmethod
-    def tree2(o, t, h, w):
-        columns = ["Outlook", "Temp", "Humidity", "Windy"]
-        outlook = ["Sunny", "Overcast", "Rainy"]
-        temp = ["Hot", "Mild", "Cool"]
-        humidity = ["High", "Normal"]
-        windy = ["True", "False"]
-        pass
 
 
 # Main Method

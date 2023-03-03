@@ -5,39 +5,6 @@ import csv
 import os
 import shutil
 
-# Wurzel = leerer Baum
-# Subset = {Dataset}
-#
-# def decision_tree_calculation(Wurzel, Subset)
-#     Erstelle [Alle Spaltennamen]
-#
-#     Für jede Spalte:
-#         Erstelle [Werte]
-#         Erstelle S(Spalte) = [9 +, 5 -]
-#         Berechne Entropie der gesamten Spalte
-#
-#         Für jeden Wert:
-#             Erstelle S(Wert)
-#             Berechne Entropie(Wert)
-#
-#         Berechne Gain(der gesamten Spalte)
-#
-#     Vergleiche Gain aller Spalten
-#     Wähle Maximum
-#     Wähle Spalte des Maximums als Knoten
-#
-#     Lege für jeden Wert der Spalte eine Kante an
-#     Zähle für jede Kante die Menge der Antworten
-#         Wenn nur Ja oder nur Nein:
-#             Antwort als Kindknoten, Abbruchkriterium
-#         Ansonsten:
-#             Wurzel = Aktuelle Wurzel
-#             Subset = Dataset | Spalte->Wert
-#             decision_tree_calculation(Wurzel, Subset)
-
-
-
-
 # Creates the decision tree. The argument root_id_suffix is necessary to distinguish different nodes
 # with the same name by adding the root_id_suffix to the name of the node to create a unique id
 # for the node.
@@ -373,6 +340,7 @@ def read_csv_file(path: str) -> pd.DataFrame:
         return df
 
 
+# This method is called from the GUI.
 def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool, graph_preview: bool, dot: bool, sub_folder: bool) -> None:
     # invalid file paths
     if input_path == "" or output_dir == "":
@@ -445,43 +413,3 @@ def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool
     # delete dot file when boolean flag is true
     if not dot:
         os.remove(dot_path)
-
-
-
-# input for tests
-
-# # classical play tennis data set
-# data = {
-#     "Outlook": ["Sunny", "Sunny", "Overcast", "Rain", "Rain", "Rain", "Overcast",
-#                 "Sunny", "Sunny", "Rain", "Sunny", "Overcast", "Overcast", "Rain"],
-#     "Temperature": ["Hot", "Hot", "Hot", "Mild", "Cool", "Cool", "Cool",
-#                     "Mild", "Cool", "Mild", "Mild", "Mild", "Hot", "Mild"],
-#     "Humidity": ["High", "High", "High", "High", "Normal", "Normal", "Normal",
-#                  "High", "Normal", "Normal", "Normal", "High", "Normal", "High"],
-#     "Wind": ["Weak", "Strong", "Weak", "Weak", "Weak", "Strong", "Strong",
-#              "Weak", "Weak", "Weak", "Strong", "Strong", "Weak", "Strong"],
-#     "PlayTennis": ["No", "No", "Yes", "Yes", "Yes", "No", "Yes",
-#                    "No", "Yes", "Yes", "Yes", "Yes", "Yes", "No"]
-# }
-#
-# # second data set (notes for Dennis: der gleiche Datensatz, wie aus der 5. KDDM-
-# # Übung mit einem weiteren Datum am Ende, um den Fall len(cols) == 2 abzudecken
-# data2 = {
-#     "Experience": ["1-2", "2-7", ">7", "1-2", ">7", "1-2", "2-7", "2-7", ">7"],
-#     "Gender": ["m", "m", "f", "f", "m", "m", "f", "m", "f"],
-#     "Area": ["u", "r", "r", "r", "r", "r", "u", "u", "r"],  # u=urban, r=rural
-#     "Risk class": ["l", "h", "l", "h", "h", "h", "l", "l", "h"]  # h=high, l=low
-# }
-#
-# data_arg: pd.DataFrame = pd.DataFrame(data)  # the dataframe for data
-# data_arg2: pd.DataFrame = pd.DataFrame(data2)  # the dataframe for data2
-# data_arg3: pd.DataFrame = read_csv_file("Data_2023.3.1-17.50.46.csv")
-# root_id_suffix_arg = ""  # second argument of the function
-#
-#
-#
-# # run the classification algorithm on the data set and get the decision tree and log file
-# decision_tree_calculation(data_arg3, compact_log=True)
-# # Render the graph from the dot file.
-# file_path = 'tree.dot'
-# Source.from_file(file_path).view()

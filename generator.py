@@ -12,8 +12,6 @@ def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     :param values: Amount of different values in each column
     :param rows: Amount of rows/lines to be randomly created
     :param data_path: Output path, where the file is to be stored
-    :param cb: Checkbox. Integer 0/1. Denominates whether the output directory shall be opened in Explorer after file
-    has been created (not implemented because every OS needs to be handled separately)
     :return: None
     """
 
@@ -153,6 +151,3 @@ def save_file(fn: str, rows: [[]]) -> None:
             output_file.write(row[i] + ";")
         output_file.write(row[len(row)-1] + "\n")
     output_file.close()
-
-
-# create_data(10, 10, 1000, "/home/dennis/MEGA/Hiwi/DeTTA")
