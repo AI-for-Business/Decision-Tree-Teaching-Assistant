@@ -305,11 +305,11 @@ def decision_tree_calculation(input_path: str, detailed_log: bool, output_dir: s
 
     # create the log file
     if detailed_log:
-        log_type = "detailed"
+        log_type = "extended"
     else:
         log_type = "compact"
     log = output[2]
-    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_solution.txt"
     f = open(log_path, "w")
     for line in log:
         f.write(line + "\n")
@@ -349,10 +349,10 @@ def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool
     # file names and file paths
     input_file_name = os.path.basename(input_path)
     if detailed_log:
-        log_type = "detailed"
+        log_type = "extended"
     else:
         log_type = "compact"
-    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_solution.txt"
     dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
 
     # corner case (Randfall): data is first created not in a sub folder and then in a sub folder:
@@ -387,7 +387,7 @@ def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool
             os.mkdir(sub_folder_dir)
 
         # log file
-        new_path_log_file = sub_folder_dir + "/" + input_file_name[:-4] + "_" + log_type + "_log.txt"
+        new_path_log_file = sub_folder_dir + "/" + input_file_name[:-4] + "_" + log_type + "_solution.txt"
         if log_already_existent:
             shutil.copy2(log_path, new_path_log_file)
         else:

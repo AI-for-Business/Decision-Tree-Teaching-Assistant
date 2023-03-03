@@ -132,7 +132,7 @@ def create_rows(number_of_rows: int, cols: [str], cols_vals: {str: [str]}) -> [[
 
 # Create the rows with the target attribute.
 def classify_rows(rows: [[]], rules: [{str: str}]) -> [[]]:
-    rows[0].append("Yes/No")
+    rows[0].append("classification")
     for i in range(1, len(rows)):
         for rule in rules:
             if set(rule.values()) <= set(rows[i]):
