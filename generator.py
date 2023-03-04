@@ -4,7 +4,7 @@ from os import path
 from numpy import random as r
 
 
-def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
+def create_data(columns: int, values: int, rows: int, data_path: str) -> str:
     """
     This method gets called from the GUI, receives all user input, and starts to create synthetic data.
     Nothing happens when invalid arguments are given.
@@ -12,12 +12,8 @@ def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     :param values: Amount of different values in each column
     :param rows: Amount of rows/lines to be randomly created
     :param data_path: Output path, where the file is to be stored
-    :return: None
+    :return: The path to the csv file
     """
-
-    # invalid parameters
-    if columns <= 0 or values <= 0 or rows <= 0 or data_path == "":
-        return
 
     file_path = create_file(data_path)
     cols = create_columns(columns)
@@ -26,6 +22,7 @@ def create_data(columns: int, values: int, rows: int, data_path: str) -> None:
     created_rows = create_rows(rows, cols, vals_columns)
     classified_rows = classify_rows(created_rows, rules)
     save_file(file_path, classified_rows)
+    return file_path
 
 
 # Creates an empty csv file. Returns the file path.

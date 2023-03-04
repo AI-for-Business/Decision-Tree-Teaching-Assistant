@@ -16,7 +16,9 @@ class GUI:
 
         # Interactive GUI elements
         self.lbl_file_in = None
+        self.lbl_file_in_val = None
         self.lbl_path_out = None
+        self.lbl_path_out_val = None
         self.lbl_path_data_out = None
         self.Columns: Entry | None = None
         self.Rows: Entry | None = None
@@ -72,7 +74,22 @@ class GUI:
         l1 = tk.Label(tab, width=0, height=1)
         l1.grid(column=0, row=4)
 
-        btn_create_data = Button(tab, text="Create data...", command=lambda: g.create_data(ent_cols_val.get(), ent_vals_val.get(), ent_rows_val.get(), lbl_path_data_out_val.get()))
+        # what happens after the "create data" button is pressed
+        def create_data_action():
+            # nothing happens with invalid input
+            if ent_cols_val.get() <= 0 or ent_vals_val.get() <= 0 or ent_rows_val.get() <= 0 or lbl_path_data_out_val.get() == "":
+                return
+
+            # create data
+            data_path = g.create_data(ent_cols_val.get(), ent_vals_val.get(), ent_rows_val.get(), lbl_path_data_out_val.get())
+
+            # go to process data tab and set the input file and output directory
+            self.tab_control.select(self.process_tab)
+            self.lbl_file_in_val.set(data_path)
+            self.lbl_path_out_val.set(lbl_path_data_out_val.get())
+
+        # create data button
+        btn_create_data = Button(tab, text="Create data...", command=create_data_action)
         btn_create_data.grid(column=1, row=5, sticky=tk.W, padx=5, pady=5)
 
         # Add the frame to the frame tab controller
@@ -92,6 +109,7 @@ class GUI:
         lbl_file_in_val = tk.StringVar()
         lbl_file_in = Entry(tab, width=50, state='disabled', textvariable=lbl_file_in_val)
         lbl_file_in.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+        self.lbl_file_in_val = lbl_file_in_val
         self.lbl_file_in = lbl_file_in
 
         # Blank line
@@ -105,6 +123,7 @@ class GUI:
         lbl_path_out_val = tk.StringVar()
         lbl_path_out = Entry(tab, width=50, state='disabled', textvariable=lbl_path_out_val)
         lbl_path_out.grid(column=1, row=2, sticky=tk.W, padx=5, pady=5)
+        self.lbl_path_out_val = lbl_path_out_val
         self.lbl_path_out = lbl_path_out
 
         # Checkbox create files in sub folder
