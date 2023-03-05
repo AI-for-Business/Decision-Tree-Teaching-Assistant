@@ -331,10 +331,12 @@ def read_csv_file(path: str) -> pd.DataFrame:
     with open(path, newline='') as f:
         reader = csv.reader(f)
         cols = next(reader)
-        cols = cols[0].split(";")
+        if cols[0].__contains__(';'):
+            cols = cols[0].split(";")
         rows = []
         for row in reader:
-            row = row[0].split(";")
+            if row[0].__contains__(';'):
+                row = row[0].split(";")
             rows.append(row)
         df = pd.DataFrame(rows, columns=cols)
         return df
