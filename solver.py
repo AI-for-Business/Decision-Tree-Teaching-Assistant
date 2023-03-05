@@ -413,3 +413,9 @@ def process_data(input_path: str, detailed_log: bool, output_dir: str, svg: bool
     # delete dot file when boolean flag is true
     if not dot:
         os.remove(dot_path)
+
+    # Sometimes on Windows machines a second DOT file without the ".dot" file ending is created.
+    # Delete this file if it exists.
+    trash_dot_file_path = output_dir + "/" + input_file_name[:-4]
+    if os.path.exists(trash_dot_file_path):
+        os.remove(trash_dot_file_path)
