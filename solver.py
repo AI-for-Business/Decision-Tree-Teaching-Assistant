@@ -332,11 +332,19 @@ def read_csv_file(path: str) -> pd.DataFrame:
         reader = csv.reader(f)
         cols = next(reader)
         if cols[0].__contains__(';'):
-            cols = cols[0].split(";")
+            cols = cols[0].split(';')
+        elif cols[0].__contains__(','):
+            cols = cols[0].split(',')
+        elif cols[0].__contains__('\t'):
+            cols = cols[0].split('\t')
         rows = []
         for row in reader:
             if row[0].__contains__(';'):
-                row = row[0].split(";")
+                row = row[0].split(';')
+            elif row[0].__contains__(','):
+                row = row[0].split(',')
+            elif row[0].__contains__('\t'):
+                row = row[0].split('\t')
             rows.append(row)
         df = pd.DataFrame(rows, columns=cols)
         return df
