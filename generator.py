@@ -25,8 +25,12 @@ def create_data(columns: int, values: int, rows: int, data_path: str) -> str:
     return file_path
 
 
-# Creates an empty csv file. Returns the file path.
 def create_file(data_path: str) -> str:
+    """
+    Creates an empty CSV file.
+    :param data_path: The path to the CSV file.
+    :return: The path to the CSV file.
+    """
     # Create file name from current timestamp
     d1: datetime = datetime.now()
     y: str = str(d1.year)
@@ -47,8 +51,12 @@ def create_file(data_path: str) -> str:
     return fn
 
 
-# Creates the columns.
 def create_columns(amount_of_cols: int) -> list[str]:
+    """
+    Creates the columns of the data set.
+    :param amount_of_cols: The amount of columns.
+    :return: A list of the columns.
+    """
     cols: [str] = []
     for i in range(amount_of_cols):
         col_name = "col" + str(i + 1)
@@ -56,8 +64,13 @@ def create_columns(amount_of_cols: int) -> list[str]:
     return cols
 
 
-# Creates the values for each column.
 def create_column_values(cols: list[str], values_per_column: int) -> {str: [str]}:
+    """
+    Creates the values for each column.
+    :param cols: The columns for which the values are to be created.
+    :param values_per_column: The amount of values per column.
+    :return: A dictionary where the key is the column and the value is the list of values for the column.
+    """
     vals: {str: [str]} = {}
     for col in cols:
         vals_for_col: [str] = []
@@ -68,8 +81,14 @@ def create_column_values(cols: list[str], values_per_column: int) -> {str: [str]
     return vals
 
 
-# Creates the rules based on which the data will be classified.
 def create_rules(cols: [str], cols_vals: {str:  [str]}) -> [{str: str}]:
+    """
+    Creates the rules based on which the data will be classified.
+    :param cols: The columns of the data set.
+    :param cols_vals: The values for each column.
+    :return: The rules. Every rule is a dictionary of attribute (key) and the value the attribute has to have
+    (value).
+    """
     values_per_col = len(cols_vals[cols[0]])
 
     # parameters
@@ -115,8 +134,14 @@ def create_rules(cols: [str], cols_vals: {str:  [str]}) -> [{str: str}]:
     return list(chain.from_iterable(rules))
 
 
-# Create the rows without the target attribute.
 def create_rows(number_of_rows: int, cols: [str], cols_vals: {str: [str]}) -> [[]]:
+    """
+    Create the rows for the data set without the target attribute.
+    :param number_of_rows: The number of rows of the data set.
+    :param cols: The columns of the data set.
+    :param cols_vals: The values for the cols.
+    :return: The rows. Every row is a list of attribute values without the target attribute value.
+    """
     rows = [cols]
     for i in range(number_of_rows):
         row = []
@@ -127,8 +152,13 @@ def create_rows(number_of_rows: int, cols: [str], cols_vals: {str: [str]}) -> [[
     return rows
 
 
-# Create the rows with the target attribute.
 def classify_rows(rows: [[]], rules: [{str: str}]) -> [[]]:
+    """
+    Appends the target attribute value to all rows.
+    :param rows: The created rows without the target attribute value.
+    :param rules: The rules based on which the rows are to be classified.
+    :return: The rows. Every row is a list of attribute values including the target attribute value.
+    """
     rows[0].append("classification")
     for i in range(1, len(rows)):
         for rule in rules:
@@ -140,8 +170,12 @@ def classify_rows(rows: [[]], rules: [{str: str}]) -> [[]]:
     return rows
 
 
-# Save the rows.
 def save_file(fn: str, rows: [[]]) -> None:
+    """
+    Save the rows in a file.
+    :param fn: The file in which the rows are saved.
+    :param rows: The rows of the data set.
+    """
     output_file = open(fn, "w")
     for row in rows:
         for i in range(len(row)-1):
