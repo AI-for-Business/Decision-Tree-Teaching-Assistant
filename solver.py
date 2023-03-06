@@ -6,6 +6,136 @@ import os
 import shutil
 
 
+def process_data(input_path: str, detailed_solution: bool, output_dir: str, svg: bool, graph_preview: bool, dot: bool,
+                 sub_folder: bool) -> None:
+    """
+    This method is called from the GUI. Process the input CSV file.
+    :param input_path: The path to the CSV file.
+    :param detailed_solution: Flag on whether a detailed solution file is to be created.
+    :param output_dir: The directory where the output is to be stored.
+    :param svg: Flag on whether a SVG file of the decision tree is to be created.
+    :param graph_preview: Flag on whether the graph should be previewed when a SVG is to be created.
+    :param dot: Flag on whether a DOT file is to be created.
+    :param sub_folder: Flag on whether all output files are to be stored in an output folder in the output directory.
+    """
+
+    # invalid file paths
+    if input_path == "" or output_dir == "":
+        return
+
+    # file names and file paths
+    input_file_name = os.path.basename(input_path)
+    if detailed_solution:
+        solution_type = "extended"
+    else:
+        solution_type = "compact"
+    solution_path = output_dir + "/" + input_file_name[:-4] + "_" + solution_type + "_solution.txt"
+    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
+
+    # corner case (Randfall): data is first created not in a sub folder and then in a sub folder:
+    # In order to prevent data to be deleted from the not sub folder when being moved to the sub folder
+    # we need to remember that the data already existed before in the not sub folder.
+    if os.path.exists(solution_path):
+        solution_already_existent = True
+    else:
+        solution_already_existent = False
+    if os.path.exists(dot_path):
+        dot_already_existent = True
+    else:
+        dot_already_existent = False
+
+    # decision tree creation together with log and dot file
+    decision_tree_creation(input_path, detailed_solution, output_dir)
+
+    # svg file creation
+    if svg and not sub_folder:
+        dot_source = Source.from_file(dot_path, format='svg')
+        if graph_preview:
+            dot_source.view(dot_path[:-4], cleanup=True)
+        else:
+            dot_source.render(dot_path[:-4], cleanup=True)
+
+    # move all files to a sub folder when flag is true
+    if sub_folder:
+
+        # create directory
+        sub_folder_dir = input_path[:-4] + "_processed"
+        if not os.path.exists(sub_folder_dir):
+            os.mkdir(sub_folder_dir)
+
+        # solution file
+        new_path_solution_file = sub_folder_dir + "/" + input_file_name[:-4] + "_" + solution_type + "_solution.txt"
+        if solution_already_existent:
+            shutil.copy2(solution_path, new_path_solution_file)
+        else:
+            os.replace(solution_path, new_path_solution_file)
+
+        # svg file
+        if svg:
+            dot_source = Source.from_file(dot_path, format='svg')
+            svg_path = sub_folder_dir + "/" + input_file_name[:-4]
+            if graph_preview:
+                dot_source.view(svg_path, cleanup=True)
+            else:
+                dot_source.render(svg_path)
+
+        # dot file
+        if dot:
+            new_dot_path = sub_folder_dir + "/" + input_file_name[:-3] + "dot"
+            if dot_already_existent:
+                shutil.copy2(dot_path, new_dot_path)
+            else:
+                os.replace(dot_path, new_dot_path)
+
+    # delete dot file when boolean flag is true
+    if not dot:
+        os.remove(dot_path)
+
+    # Sometimes on Windows machines a second DOT file without the ".dot" file ending is created.
+    # Delete this file if it exists.
+    trash_dot_file_path = output_dir + "/" + input_file_name[:-4]
+    if os.path.exists(trash_dot_file_path):
+        os.remove(trash_dot_file_path)
+
+
+def decision_tree_creation(input_path: str, detailed_solution_file: bool, output_dir: str) -> None:
+    """
+    Creates the DOT file of the tree and a solution file.
+    :param input_path: The path of the CSV file where the data is stored.
+    :param detailed_solution_file: A boolean flag whether a detailed or compact solution file is to be created.
+    :param output_dir: The directory where the DOT file and solution file is to be saved.
+    """
+
+    # data management
+    df: pd.DataFrame = read_csv_file(input_path)
+    input_file_name = os.path.basename(input_path)
+
+    # calculation
+    output = decision_tree_calculation(df, "", detailed_solution_file)
+
+    # create the solution file
+    if detailed_solution_file:
+        log_type = "extended"
+    else:
+        log_type = "compact"
+    log = output[2]
+    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_solution.txt"
+    f = open(log_path, "w")
+    for line in log:
+        f.write(line + "\n")
+    f.close()
+
+    # create the dot file for the tree
+    dot_text = output[1]
+    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
+    f = open(dot_path, "w")
+    f.write("digraph G {\n")
+    for line in dot_text:
+        f.write("\t" + line + "\n")
+    f.write("}")
+    f.close()
+
+
 def decision_tree_calculation(subset: pd.DataFrame, root_id_suffix: str,
                               detailed_approach: bool) -> (str, list[str], list[str]):
     """
@@ -233,44 +363,6 @@ def decision_tree_calculation(subset: pd.DataFrame, root_id_suffix: str,
     # the approaches of all subtrees so far are returned.
 
 
-def decision_tree_creation(input_path: str, detailed_solution_file: bool, output_dir: str) -> None:
-    """
-    Creates the DOT file of the tree and a solution file.
-    :param input_path: The path of the CSV file where the data is stored.
-    :param detailed_solution_file: A boolean flag whether a detailed or compact solution file is to be created.
-    :param output_dir: The directory where the DOT file and solution file is to be saved.
-    """
-
-    # data management
-    df: pd.DataFrame = read_csv_file(input_path)
-    input_file_name = os.path.basename(input_path)
-
-    # calculation
-    output = decision_tree_calculation(df, "", detailed_solution_file)
-
-    # create the solution file
-    if detailed_solution_file:
-        log_type = "extended"
-    else:
-        log_type = "compact"
-    log = output[2]
-    log_path = output_dir + "/" + input_file_name[:-4] + "_" + log_type + "_solution.txt"
-    f = open(log_path, "w")
-    for line in log:
-        f.write(line + "\n")
-    f.close()
-
-    # create the dot file for the tree
-    dot_text = output[1]
-    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
-    f = open(dot_path, "w")
-    f.write("digraph G {\n")
-    for line in dot_text:
-        f.write("\t" + line + "\n")
-    f.write("}")
-    f.close()
-
-
 def read_csv_file(path: str) -> pd.DataFrame:
     """
     Read data from a CSV file.
@@ -297,95 +389,3 @@ def read_csv_file(path: str) -> pd.DataFrame:
             rows.append(row)
         df = pd.DataFrame(rows, columns=cols)
         return df
-
-
-def process_data(input_path: str, detailed_solution: bool, output_dir: str, svg: bool, graph_preview: bool, dot: bool,
-                 sub_folder: bool) -> None:
-    """
-    This method is called from the GUI. Process the input CSV file.
-    :param input_path: The path to the CSV file.
-    :param detailed_solution: Flag on whether a detailed solution file is to be created.
-    :param output_dir: The directory where the output is to be stored.
-    :param svg: Flag on whether a SVG file of the decision tree is to be created.
-    :param graph_preview: Flag on whether the graph should be previewed when a SVG is to be created.
-    :param dot: Flag on whether a DOT file is to be created.
-    :param sub_folder: Flag on whether all output files are to be stored in an output folder in the output directory.
-    """
-
-    # invalid file paths
-    if input_path == "" or output_dir == "":
-        return
-
-    # file names and file paths
-    input_file_name = os.path.basename(input_path)
-    if detailed_solution:
-        solution_type = "extended"
-    else:
-        solution_type = "compact"
-    solution_path = output_dir + "/" + input_file_name[:-4] + "_" + solution_type + "_solution.txt"
-    dot_path = output_dir + "/" + input_file_name[:-3] + "dot"
-
-    # corner case (Randfall): data is first created not in a sub folder and then in a sub folder:
-    # In order to prevent data to be deleted from the not sub folder when being moved to the sub folder
-    # we need to remember that the data already existed before in the not sub folder.
-    if os.path.exists(solution_path):
-        solution_already_existent = True
-    else:
-        solution_already_existent = False
-    if os.path.exists(dot_path):
-        dot_already_existent = True
-    else:
-        dot_already_existent = False
-
-    # decision tree creation together with log and dot file
-    decision_tree_creation(input_path, detailed_solution, output_dir)
-
-    # svg file creation
-    if svg and not sub_folder:
-        dot_source = Source.from_file(dot_path, format='svg')
-        if graph_preview:
-            dot_source.view(dot_path[:-4], cleanup=True)
-        else:
-            dot_source.render(dot_path[:-4], cleanup=True)
-
-    # move all files to a sub folder when flag is true
-    if sub_folder:
-
-        # create directory
-        sub_folder_dir = input_path[:-4] + "_processed"
-        if not os.path.exists(sub_folder_dir):
-            os.mkdir(sub_folder_dir)
-
-        # solution file
-        new_path_solution_file = sub_folder_dir + "/" + input_file_name[:-4] + "_" + solution_type + "_solution.txt"
-        if solution_already_existent:
-            shutil.copy2(solution_path, new_path_solution_file)
-        else:
-            os.replace(solution_path, new_path_solution_file)
-
-        # svg file
-        if svg:
-            dot_source = Source.from_file(dot_path, format='svg')
-            svg_path = sub_folder_dir + "/" + input_file_name[:-4]
-            if graph_preview:
-                dot_source.view(svg_path, cleanup=True)
-            else:
-                dot_source.render(svg_path)
-
-        # dot file
-        if dot:
-            new_dot_path = sub_folder_dir + "/" + input_file_name[:-3] + "dot"
-            if dot_already_existent:
-                shutil.copy2(dot_path, new_dot_path)
-            else:
-                os.replace(dot_path, new_dot_path)
-
-    # delete dot file when boolean flag is true
-    if not dot:
-        os.remove(dot_path)
-
-    # Sometimes on Windows machines a second DOT file without the ".dot" file ending is created.
-    # Delete this file if it exists.
-    trash_dot_file_path = output_dir + "/" + input_file_name[:-4]
-    if os.path.exists(trash_dot_file_path):
-        os.remove(trash_dot_file_path)
