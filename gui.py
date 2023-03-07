@@ -1,3 +1,4 @@
+import os.path
 from tkinter import filedialog as fd
 from tkinter import Button, Entry, END, ttk, Label
 import tkinter as tk
@@ -205,15 +206,28 @@ class GUI:
     def choose_input_file(self):
         """
         The command which is executed after the button for choosing the input file is pressed.
-        The file system is displayed and the user selects the input file.
+        The file system is displayed and the user selects the input file. After that the directory for the output
+        is automatically set as the same directory as the input file directory.
         """
+
+        # select the input file
         file_selected = fd.askopenfilename()
-        length = len(file_selected) + 5
+        file_selected_len = len(file_selected) + 5
         self.lbl_file_in.config(state='normal')
-        self.lbl_file_in.config(width=length)
+        self.lbl_file_in.config(width=file_selected_len)
         self.lbl_file_in.delete(0, END)
         self.lbl_file_in.insert(0, file_selected)
         self.lbl_file_in.config(state='disabled')
+
+        # set the output directory
+        file_name_len = len(os.path.basename(file_selected))
+        output_dir = file_selected[:-(file_name_len+1)]
+        output_dir_len = len(output_dir) + 5
+        self.lbl_path_out.config(state='normal')
+        self.lbl_path_out.config(width=output_dir_len)
+        self.lbl_path_out.delete(0, END)
+        self.lbl_path_out.insert(0, output_dir)
+        self.lbl_path_out.config(state='disabled')
 
     def choose_output_directory(self):
         """
