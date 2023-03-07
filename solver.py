@@ -111,7 +111,7 @@ def decision_tree_creation(input_path: str, detailed_solution_file: bool, output
     input_file_name = os.path.basename(input_path)
 
     # calculation
-    output = decision_tree_calculation(df, "", detailed_solution_file)
+    output = decision_tree_calculation(df, " ", detailed_solution_file)
 
     # create the solution file
     if detailed_solution_file:
