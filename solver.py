@@ -13,8 +13,8 @@ def process_data(input_path: str, detailed_solution: bool, output_dir: str, svg:
     :param input_path: The path to the CSV file.
     :param detailed_solution: Flag on whether a detailed solution file is to be created.
     :param output_dir: The directory where the output is to be stored.
-    :param svg: Flag on whether a SVG file of the decision tree is to be created.
-    :param graph_preview: Flag on whether the graph should be previewed when a SVG is to be created.
+    :param svg: Flag on whether an SVG file of the decision tree is to be created.
+    :param graph_preview: Flag on whether the graph should be previewed when an SVG is to be created.
     :param dot: Flag on whether a DOT file is to be created.
     :param sub_folder: Flag on whether all output files are to be stored in an output folder in the output directory.
     """
@@ -182,7 +182,7 @@ def decision_tree_calculation(subset: pd.DataFrame, root_id_suffix: str,
     # calculate the entropy for all data points
     entropy: float = 0
     for i in range(len(target_attr_vals_unique)):  # For every distinct value of the target attribute ...
-        percentage = target_attr_vals_counts[i] / n  # ... calculate the percentage of its occurence compared to all
+        percentage = target_attr_vals_counts[i] / n  # ... calculate the percentage of its occurrence compared to all
         # values ...
         approach_percentage = math.log2(percentage)  # ... and calculate log_2 of the percentage ...
         entropy -= percentage * approach_percentage  # ... to multiply the percentage with log_2(percentage)
@@ -315,7 +315,7 @@ def decision_tree_calculation(subset: pd.DataFrame, root_id_suffix: str,
                 approach.append("\t\t\tThere is only target attribute value left (i. e. we have perfect entropy). --> "
                                 "Create " + str(child_node_name) + " as the child node.")
 
-        elif m == 2:  # stops the recursion if there are no other split attributes left and we have no perfect entropy
+        elif m == 2:  # stops the recursion if there are no other split attributes left, and we have no perfect entropy
             child_node_name = val_subset.iloc[:, m - 1].value_counts().keys()[0]  # the target attribute value with the
             # most rows
             child_node_id = child_node_name + root_id_suffix + str(id_suffix)  # the id of the node which represents the

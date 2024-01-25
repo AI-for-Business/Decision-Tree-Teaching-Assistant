@@ -11,8 +11,6 @@ class GUI:
     def __init__(self):
         # Create main GUI frame
         self.root = tk.Tk()
-        # self.root.geometry("640x480")
-        # self.root.config(background='blue')
         self.root.title("DeTTA - Decision Tree Teaching Assistant")
 
         # Interactive GUI elements
@@ -265,9 +263,3 @@ class GUI:
         :param c1_dummy:
         """
         self.root.quit()
-
-
-# Main Method
-if __name__ == '__main__':
-    # Todo: Delete this
-    g = GUI()
