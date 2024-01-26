@@ -32,7 +32,7 @@ As such:
 
 
 # Authors, Citation
-Yorck Zisgen {0000-0002-9646-2829}, University of Bayreuth\
+Yorck Zisgen {0000-0002-9646-2829}, University of Bayreuth, Germany
 
 Cite as:\
 *Decision Tree Teaching Assistant by Yorck Zisgen, licensed under
