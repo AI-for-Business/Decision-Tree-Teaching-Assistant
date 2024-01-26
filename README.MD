@@ -32,10 +32,15 @@ As such:
 
 
 # Authors, Citation
-{Feedback CZ}
+Yorck Zisgen {0000-0002-9646-2829}, University of Bayreuth\
+
+Cite as:\
+*Decision Tree Teaching Assistant by Yorck Zisgen, licensed under
+[CC-BY-NC-SA](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt),
+via https://github.com/AI-for-Business/Decision-Tree-Teaching-Assistant*
 
 # DOI - Code
-{Feedback CZ}
+[![DOI](https://zenodo.org/badge/635332106.svg)](https://zenodo.org/doi/10.5281/zenodo.10572369)
 
 # Contact / About us
 * You can find all of our repositories [here](https://github.com/orgs/AI-for-Business/repositories).
